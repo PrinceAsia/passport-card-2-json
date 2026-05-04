@@ -57,9 +57,11 @@ RUN pip install --upgrade pip && \
 
 USER app
 
+ENV PORT=8000
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD curl -fsS http://localhost:8000/api/v1/health || exit 1
+    CMD curl -fsS "http://localhost:${PORT}/api/v1/health" || exit 1
 
-CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+# Shell form so $PORT is expanded — Railway / Cloud Run / Heroku assign one.
+CMD uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT}
