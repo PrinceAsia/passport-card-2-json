@@ -60,8 +60,7 @@ USER app
 ENV PORT=8000
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD curl -fsS "http://localhost:${PORT}/api/v1/health" || exit 1
-
 # Shell form so $PORT is expanded — Railway / Cloud Run / Heroku assign one.
+# (Healthcheck is configured by the orchestrator: see docker-compose.yml or
+# railway.json. Skip the in-Dockerfile HEALTHCHECK so it doesn't race.)
 CMD uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT}
